@@ -3,22 +3,46 @@ import React, { useEffect, useState } from "react";
 function Users() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    //  API call to backend
-    fetch("http://localhost:5000/api/users") 
-      .then((res) => res.json())
-      .then((data) => {
-        setUsers(data);
+    const fetchUsers = async () => {
+      try {
+        const token = localStorage.getItem("token"); 
+        const res = await fetch("http://localhost:5000/api/users", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, 
+          },
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          // Handle 401 or other errors
+          throw new Error(data.message || "Failed to fetch users");
+        }
+
+        if (Array.isArray(data)) {
+          setUsers(data);
+        } else {
+          setUsers([]);
+        }
+
         setLoading(false);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Error fetching users:", err);
+        setError(err.message);
+        setUsers([]);
         setLoading(false);
-      });
+      }
+    };
+
+    fetchUsers();
   }, []);
 
   if (loading) return <p>Loading users...</p>;
+  if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
 
   return (
     <div className="users-page">

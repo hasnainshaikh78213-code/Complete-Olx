@@ -1,5 +1,6 @@
+import { FaUserCircle } from "react-icons/fa";
 import React, { useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode"; // ✅ aapke version ke hisaab se sahi import
+import { jwtDecode } from "jwt-decode"; 
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
 import Login from "./Login";
@@ -12,7 +13,7 @@ function Navbar() {
   const [showSignup, setShowSignup] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isSeller, setIsSeller] = useState(false); // ✅ naya state
+  const [isSeller, setIsSeller] = useState(false); 
   const [cartCount, setCartCount] = useState(0);
 
   const navigate = useNavigate();
@@ -27,7 +28,6 @@ function Navbar() {
         setIsLoggedIn(true);
         setIsAdmin(decoded.email === "developers@gmail.com");
 
-        // ✅ check user role agar backend token me "role" ya "isSeller" ho
         if (decoded.role === "seller" || decoded.isSeller) {
           setIsSeller(true);
         } else {
@@ -109,52 +109,65 @@ function Navbar() {
         </div>
 
         <div className="actions">
-          {!isLoggedIn ? (
-            <button className="login" onClick={() => setShowLogin(true)}>
-              Login
+  {!isLoggedIn ? (
+    <button className="login" onClick={() => setShowLogin(true)}>
+      Login
+    </button>
+  ) : (
+    <>
+      {/* Admin check: agar admin ho to Sell/Cart/Profile hide */}
+      {!isAdmin && (
+        <>
+          {/* Profile Button */}
+          <button
+            className="profile-btn"
+            onClick={() => navigate("/profile")}
+          >
+            <FaUserCircle size={35} color="#333" />
+          </button>
+
+          {/* Sell Button */}
+          <button className="sell-btn" onClick={handleSellClick}>
+            + Sell
+          </button>
+
+          {/* Seller Chat Button */}
+          {isSeller && (
+            <button
+              className="seller-chat-btn"
+              onClick={() => navigate("/seller/chats")}
+            >
+              My Chats
             </button>
-          ) : (
-            <>
-              {/* ✅ Sell button */}
-              <button className="sell-btn" onClick={handleSellClick}>
-                + Sell
-              </button>
-
-              {/* ✅ Seller Chat Button */}
-              {isSeller && (
-                <button
-                  className="seller-chat-btn"
-                  onClick={() => navigate("/seller/chats")}
-                >
-                  My Chats
-                </button>
-              )}
-
-              {/* ✅ Cart Button */}
-              <Link to="/cart" className="cart-link">
-                <ShoppingCart size={20} />
-                <span className="cart-text">Cart</span>
-                {cartCount > 0 && (
-                  <span className="cart-badge">{cartCount}</span>
-                )}
-              </Link>
-
-              {/* ✅ Admin Panel */}
-              {isAdmin && (
-                <button
-                  className="dashboard-btn"
-                  onClick={() => navigate("/admin")}
-                >
-                  Admin Panel
-                </button>
-              )}
-
-              <button className="logout-btn" onClick={handleLogout}>
-                Logout
-              </button>
-            </>
           )}
-        </div>
+
+          {/* Cart Button */}
+          <Link to="/cart" className="cart-link">
+            <ShoppingCart size={20} />
+            <span className="cart-text">Cart</span>
+            {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+          </Link>
+        </>
+      )}
+
+      {/* Admin Panel */}
+      {isAdmin && (
+        <button
+          className="dashboard-btn"
+          onClick={() => navigate("/admin")}
+        >
+          Admin Panel
+        </button>
+      )}
+
+      {/* Logout always dikhe */}
+      <button className="logout-btn" onClick={handleLogout}>
+        Logout
+      </button>
+    </>
+  )}
+</div>
+
       </div>
 
       {/* Bottom Navbar */}

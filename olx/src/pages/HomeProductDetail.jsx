@@ -68,12 +68,7 @@ function HomeProductDetail() {
             Chat with Seller
           </button>
 
-          {/* <button 
-  className="home-detail-chat-btn"
-  onClick={() => navigate(`/chat/${product.userId._id}`)}
->
-  Chat with Seller
-</button> */}
+          
         </div>
       </div>
     </div>

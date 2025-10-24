@@ -1,3 +1,9 @@
+/* Prevent horizontal scroll globally */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Page title */
 .cart-page h2 {
   text-align: center;
   margin-bottom: 25px;
@@ -5,25 +11,33 @@
   color: #333;
 }
 
+/* Empty cart text */
 .empty-cart {
   text-align: center;
   font-size: 18px;
   color: #666;
 }
 
+/* Cart container - 4 cards per row */
 .cart-grid {
   display: flex;
-  justify-content: center;
-  gap: 20px;
+  flex-wrap: wrap;             
+  justify-content: start;      
+  gap: 20px;                    
+  max-width: 1300px;            
+  margin: 0 auto;               
+  padding: 0 10px;              
+  box-sizing: border-box;
 }
 
+/* Individual card styling */
 .cart-card {
-  height: 400px;
+  height: 450px;
   background: #ffffff;
   border: 1px solid #e0e0e0;
   border-radius: 10px;
   overflow: hidden;
-  width: 300px;
+  width: 300px;                 
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease, box-shadow 0.3s ease;
   display: flex;
@@ -36,14 +50,16 @@
   transform: translateY(-4px);
 }
 
+/* Product image */
 .cart-card img {
   width: 95%;
-  height: 160px;
+  height: 200px;
   margin: 8px;
   border-radius: 10px;
-
+  object-fit: cover;           
 }
 
+/* Info text */
 .cart-info {
   padding: 14px;
 }
@@ -60,6 +76,7 @@
   margin-bottom: 10px;
 }
 
+/* Remove button */
 .remove-btn {
   background-color: red;
   color: white;

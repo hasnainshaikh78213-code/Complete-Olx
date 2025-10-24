@@ -10,7 +10,7 @@
 /* ==== Form Section ==== */
 .form-section {
   background: #ffffff;
-  padding: 25px 30px;
+  padding: 25px 100px;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   margin-bottom: 50px;
@@ -61,6 +61,17 @@
   transition: background 0.3s ease;
 }
 
+.product-form select{
+  width: 103.4%;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  transition: border 0.3s ease;
+  background-color: whitesmoke;
+  color: #666; 
+}
+
 .product-form button:hover {
   background-color: #0b5ed7;
 }
@@ -82,8 +93,8 @@
   display: flex;
   gap: 25px;
   flex-wrap: wrap;
-  margin-right: 100px;
-  justify-content: center;
+  justify-content: start;
+  margin-left: 120px;
 }
 
 /* ==== Product Card ==== */

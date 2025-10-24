@@ -6,9 +6,10 @@ function Signup({ onSwitch }) {
   const [form, setForm] = useState({
     name: "",
     email: "",
-    password: ""
+    password: "",
   });
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -16,20 +17,30 @@ function Signup({ onSwitch }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage("");
+    setLoading(true);
+
     try {
       const res = await axios.post("http://localhost:5000/api/users/signup", form);
+
       console.log("Signup Response:", res.data);
 
-      setMessage(res.data.msg);
-
-      if (res.status === 201 || res.status === 200) {
+      // ✅ Check if backend sent token
+      if (res.data && res.data.token) {
         localStorage.setItem("token", res.data.token);
+        setMessage("Signup successful!");
         window.location.href = "/"; // redirect to home
+      } else {
+        setMessage(res.data?.msg || "Signup failed: No token received");
       }
 
+      // Reset form
       setForm({ name: "", email: "", password: "" });
     } catch (err) {
-      setMessage(err.response?.data?.msg || "Signup failed");
+      console.error("Signup error:", err);
+      setMessage(err.response?.data?.msg || "Signup failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -62,14 +73,15 @@ function Signup({ onSwitch }) {
             onChange={handleChange}
             required
           />
-          <button type="submit">Sign Up</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Creating..." : "Sign Up"}
+          </button>
         </form>
 
         {message && <p className="msg">{message}</p>}
 
         <p className="switch-text">
-          Already have an account?{" "}
-          <span onClick={onSwitch}>Login</span>
+          Already have an account? <span onClick={onSwitch}>Login</span>
         </p>
       </div>
     </div>

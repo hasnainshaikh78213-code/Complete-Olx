@@ -77,7 +77,7 @@ router.post("/checkout", protect, async (req, res) => {
       return res.status(400).json({ message: "Cart is empty" });
     }
 
-    cart.products = [];
+
     await cart.save();
     res.status(200).json({ message: "Checkout successful" });
   } catch (error) {
@@ -85,5 +85,6 @@ router.post("/checkout", protect, async (req, res) => {
     res.status(500).json({ message: "Server error during checkout" });
   }
 });
+
 
 export default router;

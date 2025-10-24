@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import api from "../api";
+import { useNavigate } from "react-router-dom";
 import "./AddToCart.css";
 
 function AddToCart() {
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  //  Fetch cart from backend
   useEffect(() => {
     fetchCart();
   }, []);
@@ -34,7 +35,6 @@ function AddToCart() {
     }
   };
 
-  //  Remove item
   const handleRemove = async (id) => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -49,14 +49,13 @@ function AddToCart() {
       if (res.data && res.data.products) {
         const updatedCart = res.data.products.map((p) => p.productId);
         setCart(updatedCart.filter(Boolean));
-        window.dispatchEvent(new Event("cartUpdated")); // 🔄 update Navbar
+        window.dispatchEvent(new Event("cartUpdated"));
       }
     } catch (error) {
       console.error("Error removing item:", error);
     }
   };
 
-  //  Checkout
   const handleCheckout = async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -67,12 +66,12 @@ function AddToCart() {
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      alert(" Checkout successful!");
-      setCart([]);
-      window.dispatchEvent(new Event("cartUpdated")); 
+
+      navigate("/checkout");
+
     } catch (error) {
       console.error("Checkout error:", error);
-      alert(" Checkout failed");
+      alert("Checkout failed");
     }
   };
 

@@ -5,7 +5,7 @@ import "./LoginSignup.css";
 function Login({ onSwitch }) {
   const [form, setForm] = useState({ email: "", password: "" });
   const [message, setMessage] = useState("");
-
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -13,17 +13,25 @@ function Login({ onSwitch }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
     try {
       const res = await axios.post("http://localhost:5000/api/users/login", form);
-      console.log("Login Response:", res.data);
 
-      setMessage(res.data.msg);
-      localStorage.setItem("token", res.data.token);
-
-      window.location.href = "/";  
-
+      // ✅ Check if backend actually returned a token
+      if (res.data && res.data.token) {
+        localStorage.setItem("token", res.data.token);
+        setMessage("Login successful!");
+        window.location.href = "/"; // redirect to home
+      } else {
+        setMessage("Login failed: Invalid credentials or missing token");
+      }
     } catch (err) {
-      setMessage(err.response?.data?.msg || "Login failed");
+      console.error("Login error:", err);
+      setMessage(err.response?.data?.msg || "Login failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -48,14 +56,15 @@ function Login({ onSwitch }) {
             onChange={handleChange}
             required
           />
-          <button type="submit">Login</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
+          </button>
         </form>
 
         {message && <p className="msg">{message}</p>}
 
         <p className="switch-text">
-          Don’t have an account?{" "}
-          <span onClick={onSwitch}>Sign Up</span>
+          Don’t have an account? <span onClick={onSwitch}>Sign Up</span>
         </p>
       </div>
     </div>

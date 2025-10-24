@@ -17,7 +17,7 @@
   font-size: 28px;
   font-weight: bold;
   color: rgb(61, 61, 238);
-  /* margin-right: 200px; */
+  margin-left: 20px;
 }
 
 .categories-nav-a {
@@ -156,3 +156,16 @@
   font-weight: bold;
   margin-right: 70px;
 }
+
+
+.profile-btn {
+  background-color: white;
+  background: transparent;
+  border: none;
+  padding: 10px;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-right: 10px;
+}
+

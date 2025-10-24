@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import api from "../api";
-
+import { useNavigate } from "react-router-dom";
 import "./ProductAdd.css";
 
 function ProductAdd() {
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
@@ -11,6 +12,24 @@ function ProductAdd() {
   const [images, setImages] = useState([]);
   const [productList, setProductList] = useState([]);
   const [editId, setEditId] = useState(null);
+
+  // 14 Categories
+  const categories = [
+    "mobiles", 
+    "vehicles",
+    "property",
+    "rent",
+    "electronics",
+    "bikes",
+    "business",
+    "services",
+    "jobs",
+    "animals",
+    "furniture",
+    "fashion",
+    "books",
+    "kids"
+  ];
 
   const timeAgo = (date) => {
     const seconds = Math.floor((new Date() - new Date(date)) / 1000);
@@ -20,11 +39,7 @@ function ProductAdd() {
     const hours = Math.floor(minutes / 60);
     if (hours < 24) return `${hours} hours ago`;
     const days = Math.floor(hours / 24);
-    if (days < 7) return `${days} days ago`;
-    const weeks = Math.floor(days / 7);
-    if (weeks < 4) return `${weeks} week${weeks > 1 ? "s" : ""} ago`;
-    const months = Math.floor(days / 30);
-    return `${months} month${months > 1 ? "s" : ""} ago`;
+    return `${days} day${days > 1 ? "s" : ""} ago`;
   };
 
   const fetchProducts = async () => {
@@ -44,11 +59,13 @@ function ProductAdd() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const normalizedCategory = category.toLowerCase().trim();
+
     const formData = new FormData();
     formData.append("title", title);
     formData.append("price", price);
     formData.append("description", description);
-    formData.append("category", category);
+    formData.append("category", normalizedCategory);
     images.forEach((img) => formData.append("images", img));
 
     try {
@@ -67,6 +84,7 @@ function ProductAdd() {
           },
         });
       }
+
       setTitle("");
       setPrice("");
       setDescription("");
@@ -74,9 +92,12 @@ function ProductAdd() {
       setImages([]);
       setEditId(null);
       fetchProducts();
+
+      alert(" Product added successfully!");
+      navigate(`/productlisting/${normalizedCategory}`);
     } catch (err) {
       console.error(err);
-      alert(" Operation failed");
+      alert("❌ Operation failed");
     }
   };
 
@@ -95,44 +116,95 @@ function ProductAdd() {
     try {
       await api.delete(`/products/delete/${id}`);
       fetchProducts();
-      alert(" Product deleted");
+      alert("🗑️ Product deleted");
     } catch (err) {
       console.error(err);
-      alert(" Failed to delete");
+      alert("❌ Failed to delete");
     }
   };
 
   return (
     <div className="product-page">
       <div className="form-section">
-        <h2>{editId ? "Update Product" : "Add New Product"}</h2>
+        <h2>{editId ? "Update Product" : "Post Your Ad"}</h2>
         <form onSubmit={handleSubmit} className="product-form">
-          <input type="text" placeholder="Product Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
-          <input type="number" placeholder="Price (PKR)" value={price} onChange={(e) => setPrice(e.target.value)} required />
-          <textarea placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} required />
-          <input type="text" placeholder="Category" value={category} onChange={(e) => setCategory(e.target.value)} required />
-          <input type="file" multiple accept="image/*" onChange={handleFileChange} />
-          <button type="submit">{editId ? "Update Product" : "Add Product"}</button>
+          <input
+            type="text"
+            placeholder="Product Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
+          <input
+            type="number"
+            placeholder="Price (PKR)"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            required
+          />
+          <textarea
+            placeholder="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+          />
+
+          {/*  Dropdown with 14 categories */}
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            required
+          >
+            <option value="">Select Category</option>
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat.charAt(0).toUpperCase() + cat.slice(1)}
+              </option>
+            ))}
+          </select>
+
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handleFileChange}
+          />
+          <button type="submit">
+            {editId ? "Update Product" : "Add Product"}
+          </button>
         </form>
       </div>
 
       <div className="product-list-section">
-        <h3>All Products</h3>
+        <h3>My Products</h3>
         <div className="product-scroll">
           {productList.length === 0 ? (
             <p>No products yet.</p>
           ) : (
             productList.map((product) => (
               <div className="product-card" key={product._id}>
-                <img src={`http://localhost:5000/${product.images[0]}`} alt={product.title} />
+                <img
+                  src={`http://localhost:5000/${product.images[0]}`}
+                  alt={product.title}
+                />
                 <h4>{product.title}</h4>
                 <p className="home-description">{product.description}</p>
                 <p>{product.category}</p>
                 <p className="price">PKR {product.price}</p>
                 <p>Posted {timeAgo(product.createdAt)}</p>
                 <div className="card-actions">
-                  <button className="edit-btn" onClick={() => handleEdit(product)}>Edit</button>
-                  <button className="delete-btn" onClick={() => handleDelete(product._id)}>Delete</button>
+                  <button
+                    className="edit-btn"
+                    onClick={() => handleEdit(product)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="delete-btn"
+                    onClick={() => handleDelete(product._id)}
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             ))
